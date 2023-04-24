@@ -1,26 +1,21 @@
 #include <iostream>
-#include <string>
-#include <cstdlib>
-#include <ctime>
 #include <vector>
+#include <string>
+#include <ctime>
+#include <cstdlib>
 
 using namespace std;
 
-// function to check if a letter is in the word
+// function to check if a letter is in a word
 bool isLetterInWord(char letter, string word) {
-    for (int i = 0; i < word.length(); i++) {
-        if (letter == word[i]) {
-            return true;
-        }
-    }
-    return false;
+    return word.find(letter) != string::npos;
 }
 
-// function to update the display of the word with correctly guessed letters
-void updateWordDisplay(char letter, string word, string& wordDisplay) {
-    for (int i = 0; i < word.length(); i++) {
-        if (letter == word[i]) {
-            wordDisplay[i] = letter;
+// function to update the word display with correctly guessed letters
+void updateWordDisplay(char guess, string chosenWord, string& wordDisplay) {
+    for (int i = 0; i < chosenWord.length(); i++) {
+        if (chosenWord[i] == guess) {
+            wordDisplay[i] = guess;
         }
     }
 }
@@ -34,18 +29,30 @@ string getRandomWord(vector<string> categoryWords) {
 int main() {
     // seed the random number generator
     srand(time(NULL));
-
+    
     // initialize the categories and words
     vector<string> animalWords = {"cat", "dog", "fox"};
     vector<string> colorWords = {"red", "blue", "tan"};
     vector<string> fruitWords = {"fig", "kiwi", "pea"};
-
+    
     // initialize variables for the game
     vector<string> usedWords;
     bool playAgain = true;
+    
+    // game loop for playing multiple times
     while (playAgain) {
-        // initialize variables for the game
-        vector<string> usedWords;
+        // ask for player names
+        cout << "Enter the number of players: ";
+        int numPlayers;
+        cin >> numPlayers;
+        
+        vector<string> playerNames(numPlayers);
+        for (int i = 0; i < numPlayers; i++) {
+            cout << "Enter the name of player " << i+1 << ": ";
+            cin >> playerNames[i];
+        }
+        
+        // choose a category
         bool validChoice = false;
         string chosenWord;
         while (!validChoice) {
@@ -53,10 +60,10 @@ int main() {
             cout << "1. Animals" << endl;
             cout << "2. Colors" << endl;
             cout << "3. Fruits" << endl;
-
+            
             int categoryChoice;
             cin >> categoryChoice;
-
+            
             switch (categoryChoice) {
                 case 1:
                     chosenWord = getRandomWord(animalWords);
@@ -75,25 +82,30 @@ int main() {
                     break;
             }
         }
-
+        
         // initialize variables for the game
+        int currentPlayer = 0;
         int incorrectGuesses = 0;
         string wordDisplay(chosenWord.length(), '_');
-
+        
         // game loop for guessing the word
         while (incorrectGuesses < 6) {
             // display the word display and the number of incorrect guesses
             cout << "Word: " << wordDisplay << endl;
             cout << "Incorrect guesses: " << incorrectGuesses << "/6" << endl;
-
+            
+            // display the current player's name
+            cout << "Current player: " << playerNames[currentPlayer] << endl;
+            
             // get the user's guess
             char guess;
             cout << "Enter a letter guess: ";
             cin >> guess;
-
+            
             // check if the guess has already been made
             bool isAlreadyGuessed = false;
-            for (string word : usedWords) {
+            for (string word : usedWords
+) {
                 if (isLetterInWord(guess, word)) {
                     isAlreadyGuessed = true;
                     break;
